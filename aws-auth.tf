@@ -7,9 +7,9 @@ resource "kubernetes_config_map" "aws_auth_github" {
   data = {
     mapRoles = yamlencode([
       {
-        rolearn  = "arn:aws:iam::541495491938:role/GitHubEKSCluster"
-        username = "github-actions"
-        groups   = ["system:masters"]
+        rolearn  = var.github_role_arn
+        username = var.github_username
+        groups   = var.github_groups
       }
     ])
   }

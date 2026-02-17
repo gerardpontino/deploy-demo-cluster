@@ -15,15 +15,15 @@ terraform {
   }
 }
 
-# 1. Primary AWS Provider
+# Primary AWS Provider
 provider "aws" {
-  region = "ap-southeast-1"
+  region = var.aws_region
 }
 
-# 2. AWS Alias for ECR Public (Mandatory for the token)
+# AWS Alias for ECR Public
 provider "aws" {
   alias  = "us_east_1"
-  region = "us-east-1"
+  region = var.aws_region_ecr
 }
 
 # 3. Fetch the Token using the Alias
@@ -36,21 +36,6 @@ data "aws_eks_cluster_auth" "cluster" {
   name = aws_eks_cluster.main.name
 }
 
-# 5. SINGLE Helm Provider (Merging auth and registry)
-provider "helm" {
-  kubernetes {
-    host                   = aws_eks_cluster.main.endpoint
-    cluster_ca_certificate = base64decode(aws_eks_cluster.main.certificate_authority[0].data)
-    token                  = data.aws_eks_cluster_auth.cluster.token
-  }
-
-  # This part fixes the 403 Forbidden error
-  registry {
-    url      = "oci://public.ecr.aws"
-    username = data.aws_ecrpublic_authorization_token.token.user_name
-    password = data.aws_ecrpublic_authorization_token.token.password
-  }
-}
 
 # 6. Kubernetes Provider (Optional, for other k8s resources)
 provider "kubernetes" {
