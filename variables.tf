@@ -90,9 +90,3 @@ variable "node_policies" {
     "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   ]
 }
-
-variable "github_actions_role_arn" {
-  description = "The ARN of the IAM Role used by GitHub Actions to deploy to EKS"
-  type        = string
-  default     = "arn:aws:iam::541495491938:role/GitHubEKSCluster"
-}
