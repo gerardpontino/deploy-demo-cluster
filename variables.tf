@@ -47,6 +47,7 @@ variable "subnet_count" {
 variable "github_role_arn" {
   description = "IAM Role ARN for GitHub Actions to access the EKS cluster"
   type        = string
+  default     = "arn:aws:iam::541495491938:role/GitHubEKSCluster"
 }
 
 variable "github_username" {
