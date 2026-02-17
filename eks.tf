@@ -1,4 +1,8 @@
-data "aws_vpc" "default" { default = true }
+data "aws_vpc" "default" {
+  id = var.vpc_id != "" ? var.vpc_id : null
+  default = var.vpc_id == "" ? true : false
+}
+
 data "aws_subnets" "default" {
   filter {
     name   = "vpc-id"
@@ -7,18 +11,16 @@ data "aws_subnets" "default" {
 }
 
 resource "aws_eks_cluster" "main" {
-  name     = "gerard-dev-cluster"
+  name     = var.cluster_name
   role_arn = aws_iam_role.eks_cluster_role.arn
-  version  = "1.34"
+  version  = var.kubernetes_version
 
-  # FIX: This must be false for Auto Mode to work
   bootstrap_self_managed_addons = false
 
-  # Enabling EKS Auto Mode
   compute_config {
     enabled       = true
-    node_pools    = ["general-purpose", "system"]
-    node_role_arn = aws_iam_role.eks_cluster_role.arn 
+    node_pools    = var.node_pools
+    node_role_arn = aws_iam_role.eks_cluster_role.arn
   }
 
   kubernetes_network_config {
@@ -39,7 +41,7 @@ resource "aws_eks_cluster" "main" {
   }
 
   vpc_config {
-    subnet_ids             = slice(data.aws_subnets.default.ids, 0, 2)
+    subnet_ids             = slice(data.aws_subnets.default.ids, 0, var.subnet_count)
     endpoint_public_access = true
   }
 
