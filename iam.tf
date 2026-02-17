@@ -1,31 +1,18 @@
-resource "aws_iam_role" "eks_cluster_role" {
-  name = var.eks_role_name
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = ["sts:AssumeRole", "sts:TagSession"]
-        Effect = "Allow"
-        Principal = { Service = "eks.amazonaws.com" }
-      },
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = { Service = "ec2.amazonaws.com" }
-      }
-    ]
-  })
+# Reference the existing IAM role instead of creating it
+data "aws_iam_role" "eks_cluster_role" {
+  name = var.eks_role_name  # e.g., "GitHubEKSCluster"
 }
 
+# Policies required for EKS Auto Mode Cluster
 resource "aws_iam_role_policy_attachment" "cluster_auto_mode_policies" {
-  for_each  = toset(var.cluster_policies)
+  for_each   = toset(var.cluster_policies)
   policy_arn = each.value
-  role       = aws_iam_role.eks_cluster_role.name
+  role       = data.aws_iam_role.eks_cluster_role.name
 }
 
+# Permissions required for the nodes to join and function
 resource "aws_iam_role_policy_attachment" "node_auto_mode_policies" {
-  for_each  = toset(var.node_policies)
+  for_each   = toset(var.node_policies)
   policy_arn = each.value
-  role       = aws_iam_role.eks_cluster_role.name
+  role       = data.aws_iam_role.eks_cluster_role.name
 }
