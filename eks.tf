@@ -1,8 +1,10 @@
+# Fetch the VPC
 data "aws_vpc" "default" {
-  id = var.vpc_id != "" ? var.vpc_id : null
+  id      = var.vpc_id != "" ? var.vpc_id : null
   default = var.vpc_id == "" ? true : false
 }
 
+# Fetch subnets for the VPC
 data "aws_subnets" "default" {
   filter {
     name   = "vpc-id"
@@ -10,9 +12,10 @@ data "aws_subnets" "default" {
   }
 }
 
+# EKS Cluster
 resource "aws_eks_cluster" "main" {
   name     = var.cluster_name
-  role_arn = aws_iam_role.eks_cluster_role.arn
+  role_arn = data.aws_iam_role.eks_cluster_role.arn  # <-- updated
   version  = var.kubernetes_version
 
   bootstrap_self_managed_addons = false
@@ -20,7 +23,7 @@ resource "aws_eks_cluster" "main" {
   compute_config {
     enabled       = true
     node_pools    = var.node_pools
-    node_role_arn = aws_iam_role.eks_cluster_role.arn
+    node_role_arn = data.aws_iam_role.eks_cluster_role.arn  # <-- updated
   }
 
   kubernetes_network_config {
@@ -45,5 +48,8 @@ resource "aws_eks_cluster" "main" {
     endpoint_public_access = true
   }
 
-  depends_on = [aws_iam_role_policy_attachment.cluster_auto_mode_policies]
+  depends_on = [
+    aws_iam_role_policy_attachment.cluster_auto_mode_policies,
+    aws_iam_role_policy_attachment.node_auto_mode_policies
+  ]
 }
