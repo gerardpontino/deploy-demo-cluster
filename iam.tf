@@ -12,8 +12,20 @@ resource "aws_iam_role" "eks_cluster_role" {
       {
         Action = "sts:AssumeRole"
         Effect = "Allow"
-        Principal = { Service = "ec2.amazonaws.com" } # Allow EC2 to use this for nodes
+        Principal = { Service = "ec2.amazonaws.com" }
       }
     ]
   })
+}
+
+resource "aws_iam_role_policy_attachment" "cluster_auto_mode_policies" {
+  for_each  = toset(var.cluster_policies)
+  policy_arn = each.value
+  role       = aws_iam_role.eks_cluster_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "node_auto_mode_policies" {
+  for_each  = toset(var.node_policies)
+  policy_arn = each.value
+  role       = aws_iam_role.eks_cluster_role.name
 }
