@@ -50,7 +50,7 @@ variable "github_role_arn" {
 }
 
 variable "github_username" {
-  description = "Username for GitHub Actions in aws-auth config map"
+  description = "Usernames for GitHub Actions in aws-auth config map"
   type        = string
   default     = "github-actions"
 }
