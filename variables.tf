@@ -1,3 +1,17 @@
+##providers.tf variables
+variable "aws_region" {
+  description = "Primary AWS region for EKS cluster"
+  type        = string
+  default     = "ap-southeast-1"
+}
+
+variable "aws_region_ecr" {
+  description = "AWS region for ECR Public (default us-east-1)"
+  type        = string
+  default     = "us-east-1"
+}
+
+##eks.tf Variables
 variable "cluster_name" {
   description = "EKS Cluster name"
   type        = string
@@ -28,6 +42,8 @@ variable "subnet_count" {
   default     = 2
 }
 
+#aws-auth.tf variables
+
 variable "github_role_arn" {
   description = "IAM Role ARN for GitHub Actions to access the EKS cluster"
   type        = string
@@ -45,7 +61,7 @@ variable "github_groups" {
   default     = ["system:masters"]
 }
 
-##IAM
+##IAM.TF Variables
 
 variable "eks_role_name" {
   description = "Name of the IAM Role for EKS cluster and nodes"
