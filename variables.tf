@@ -69,30 +69,24 @@ variable "eks_role_name" {
   default     = "eksclusterrole"
 }
 
-# Cluster policies
-toset([
-    "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
-    "arn:aws:iam::aws:policy/AmazonEKSComputePolicy",
-    "arn:aws:iam::aws:policy/AmazonEKSBlockStoragePolicy",
-    "arn:aws:iam::aws:policy/AmazonEKSLoadBalancingPolicy",
-    "arn:aws:iam::aws:policy/AmazonEKSNetworkingPolicy"
-])
-
-# Node policies
-toset([
-    "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
-    "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
-    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-])
-
-
 variable "cluster_policies" {
-  type    = list(string)
+  description = "Policies attached to the EKS cluster role"
+  type        = list(string)
   default = [
     "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
     "arn:aws:iam::aws:policy/AmazonEKSComputePolicy",
     "arn:aws:iam::aws:policy/AmazonEKSBlockStoragePolicy",
     "arn:aws:iam::aws:policy/AmazonEKSLoadBalancingPolicy",
     "arn:aws:iam::aws:policy/AmazonEKSNetworkingPolicy"
+  ]
+}
+
+variable "node_policies" {
+  description = "Policies attached to the EKS node role"
+  type        = list(string)
+  default = [
+    "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+    "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   ]
 }
